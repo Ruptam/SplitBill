@@ -1,0 +1,217 @@
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-2 navbar navbar-default navbar-fixed-side">
+      <h4>Welcome {{userDetails.name}}</h4>
+      <ul class="nav nav-pills nav-stacked">
+        <li><button type="button" class="btn btn-link" ng-click="partition(1)">Link</button></li>
+        <li><button type="button" class="btn btn-link" ng-click="partition(2)">All Expanses</button></li>
+       	<li><button type="button" class="btn btn-link" ng-click="partition(3)">Friends</button></li>
+        <li><button type="button" class="btn btn-link" ng-click="partition(4)">Groups</button></li>
+      </ul>
+      <br>
+      
+    </div>
+
+    <div class="col-sm-9">
+		<div ng-show="part==1">
+			<div class="row">
+				<div class="col-sm-6">
+					<h5 style="color:red"><strong>You Owe: </strong>{{showSummary.owe}}</h5>
+					<button type="button" class="btn btn-link" style="color:red" data-toggle="modal" data-target="#myModal" ng-click="getTotal()">view details...</button>
+				</div>
+				<div class="col-sm-6">
+					<h5 style="color:green"><strong>You Owed: </strong>{{showSummary.owed}}</h5>
+					<button type="button" class="btn btn-link" style="color:green" data-toggle="modal" data-target="#myOwedSummary" ng-click="showOwedSummaryDetails()">view details...</button>
+				</div>
+			</div>
+			<div class="row">
+			<div class="col-sm-12">
+				
+					
+				<table class="table table-striped">
+    				<thead>
+				      <tr>
+				        <th>Your Activities</th>
+				      </tr>
+    				</thead>
+    				<tbody>
+      					<tr ng-repeat="x in recentActivities">
+        					<td>You Added Rs.{{x.amount}} for {{x.remarks}} on {{x.date}}</td>
+        					<td><button type="button" class="btn btn-default" ng-click="viewExpenseDetails(x.expenseId)">View Details</button></td>
+      					</tr>
+      				</tbody>
+    			</table>
+    			
+			</div>
+				</div>
+			</div>
+		<div ng-show="part==2">
+			<div class="col-sm-6">
+				<h4>Add Bill:</h4>
+				<div class="row">
+					<form class="form-horizontal">
+				    	<div class="form-group">
+							<strong>With you and:</strong>
+						</div>
+						<div class="form-group">
+							<select multiple class="form-control" ng-model="selectedFriend.regIdr" >
+						        <option ng-repeat="x in showAllFriends" value="{{x.regIdr}}">{{x.name}}</option>  
+						     </select>
+						     <p><input type="text" ng-model="test"></p>
+
+								<ul>
+								  <li ng-repeat="x in showAllFriends | filter:test">
+								    {{ x.name }}
+								  </li>
+								</ul>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-2" for="name">Amount:</label>
+					      <div class="col-sm-10">
+					        <input type="text" class="form-control" id="amount" placeholder="Enter Amount to split" name="amount" ng-model="selectedFriend.amount">
+					      </div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-2" for="name">Remark:</label>
+					      <div class="col-sm-10">
+					        <input type="text" class="form-control" id="remark" placeholder="Remark" name="remark" ng-model="selectedFriend.remarks">
+					      </div>
+						</div>
+					</form>
+				</div>
+				<button type="button" class="btn btn-warning" ng-click="processExpense()">Add Expense</button>
+				<div class="alert alert-info" ng-show="showSucess==1">
+  						<strong>Expense Added!</strong> 
+  				</div>
+			</div>
+		</div>
+		<div ng-show="part==3">
+			<div class="col-sm-6">
+				
+					
+				<table class="table table-striped">
+    				<thead>
+				      <tr>
+				        <th>List Of Friends</th>
+				      </tr>
+    				</thead>
+    				<tbody>
+      					<tr ng-repeat="x in showAllFriends">
+        					<td>{{x.name}} <h6>({{x.phoneNumber}})</h6></td>
+      					</tr>
+      				</tbody>
+    			</table>
+    			<div class="alert alert-info" ng-show="noFriends==1">
+  						<strong>Your have no friends Added!</strong> 
+  					</div>
+			</div>
+			<div class="col-sm-6">
+				<form class="form-horizontal">
+				    <div class="form-group">
+				    	&nbsp &nbsp &nbsp &nbsp<h3><small>Add your Friend's Contact Number</small></h3>
+				      		<div class="col-sm-10">
+				        		<input type="text" class="form-control" id="phnno" placeholder="Enter Your Friend's Phone Number" name="phnno" ng-model="friendPhnNo">
+				     	 	</div>
+				    		<div class="col-sm-2">
+				    			<button type="button" class="btn btn-warning" ng-click="addFriendtoContact()">Add Friend</button>
+				    		</div>
+					</div>
+				</form>
+				<div class="alert alert-success" ng-show="sucessFriendAdded==1">
+  					<strong>Your Friend is Added successfully!</strong> 
+  				</div>
+  				<div class="alert alert-danger" ng-show="sucessFriendAdded==2">
+  					<strong>Your Friend is Not Registered!</strong> 
+  				</div>
+  				<div class="alert alert-warning" ng-show="sucessFriendAdded==3">
+  					<strong>Your Friend Already Exists in the List!</strong> 
+  				</div>
+				</div>
+		</div>
+		</div>
+    </div>
+  </div>
+  
+  
+  <!-- -------------------------------------------------------------------------------------------------------------------  -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped">
+				<thead>
+				      <tr>
+				        <th>Share Details</th>
+				      </tr>
+    			</thead>
+    			<tbody>
+      					<tr ng-repeat="x in shareDetails">
+        					<td>{{x.userName}} Owe Rs.{{x.share}}</td>
+      					</tr>
+      				</tbody>
+    			</table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  <div id="myOwedSummary" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg" >
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+      		<div class="col-sm-6">
+	        	<table class="table table-striped">
+					<thead>
+					      <tr>
+					        <th>Total You Owed</th>
+					      </tr>
+	    			</thead>
+	    			<tbody>
+	      					<tr ng-repeat="x in owedTotalSummaryDetails">
+	        					<td>{{x.userName}} Owe Total Rs.{{x.share}}</td>
+	      					</tr>
+	      				</tbody>
+	    			</table>
+	    		</div>
+	    		<div class="col-sm-6">
+	        	<table class="table table-striped">
+					<thead>
+					      <tr>
+					        <th>Owed Details</th>
+					      </tr>
+	    			</thead>
+	    			<tbody>
+	      					<tr ng-repeat="x in owedSummaryDetails">
+	        					<td>{{x.userName}} Owe Rs.{{x.share}} on {{x.date}}</td>
+	      					</tr>
+	      				</tbody>
+	    			</table>
+	    		</div>
+	    </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>

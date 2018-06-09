@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+              http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+<context:component-scan base-package="com.bapan" />
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+<property name="prefix" value="/WEB-INF/resources/jsp/"/>
+<property name="suffix" value=".jsp"/>
+</bean>
+
+	<bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<!-- <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/> -->
+		<property name="URL" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+		<property name="user" value="hr"/>
+		<property name="password" value="hr"/>
+	</bean>
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		
+<property name="annotatedClasses">
+<list>
+	<value>com.bapan.entity.Registration</value>
+ 	<value>com.bapan.entity.Friends</value>
+ 	<value>com.bapan.entity.ExpenseEntity</value>
+ 	<value>com.bapan.entity.Expense</value>
+ 	<value>com.bapan.entity.Transaction</value>
+</list>
+</property>
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle9Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+
+			</props>
+		</property>
+		
+
+		
+	</bean>
+	
+<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+
+<tx:annotation-driven transaction-manager="transactionManager" />
+
+<mvc:resources mapping="/resources/**" location="/WEB-INF/resources/" />
+<mvc:annotation-driven />  
+
+
+
+<bean id="regdService" class="com.bapan.service.RegistrationServiceImpl"/> 
+<bean id="friendService" class="com.bapan.service.FriendServiceImpl"/> 
+<bean id="expenseService" class="com.bapan.service.ExpenseServiceImpl"/> 
+<bean id="regdModel" class="com.bapan.model.RegistrationModel" scope="prototype"/>
+<bean id="expenseModel" class="com.bapan.model.ExpencesModel" scope="prototype"/>
+<bean id="expenseDetailsModel" class="com.bapan.model.ExpenseDetailsModel" scope="prototype"/>
+<bean id="summaryModel" class="com.bapan.model.SummaryModel" scope="prototype"/>
+<bean id="summaryDetail" class="com.bapan.model.SummaryDetails" scope="prototype"/>
+<bean id="registration" class="com.bapan.entity.Registration" scope="prototype"/>
+<bean id="friends" class="com.bapan.entity.Friends" scope="prototype"/>
+<bean id="expEntity" class="com.bapan.entity.ExpenseEntity" scope="prototype"/>
+<bean id="expense" class="com.bapan.entity.Expense" scope="prototype"/>
+<bean id="transaction" class="com.bapan.entity.Transaction" scope="prototype"/>
+<bean id="registrationPk" class="com.bapan.entity.RegistrationPk" scope="prototype"/>
+<bean id="friendPk" class="com.bapan.entity.FriendsPk" scope="prototype"/>
+<bean id="registrationDao" class="com.bapan.dao.RegdDaoImpl"/>
+<bean id="friendDao" class="com.bapan.dao.FriendDaoImpl"/>
+<bean id="expenseDao" class="com.bapan.dao.ExpenseDaoImpl"/>
+
+<bean id="gson" class="com.google.gson.Gson"/> 
+<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="dataSource"/>
+</bean>
+</beans>
